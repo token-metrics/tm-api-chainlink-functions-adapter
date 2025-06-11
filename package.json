@@ -1,0 +1,29 @@
+{
+  "name": "token-metrics-chainlink-adapter",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Chainlink Functions adapter for Token Metrics API",
+  "scripts": {
+    "test": "node test/test-runner.js",
+    "test:watch": "nodemon test/test-runner.js",
+    "install:deps": "npm install --no-optional"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@chainlink/functions-toolkit": "^0.3.2",
+    "ethers": "^6.14.3"
+  },
+  "devDependencies": {
+    "dotenv": "^16.5.0",
+    "node-gyp": "^10.0.1",
+    "nodemon": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "optionalDependencies": {
+    "secp256k1": "^5.0.0"
+  }
+}
