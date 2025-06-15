@@ -16,30 +16,31 @@ if (os.platform() === "win32") {
   }
 }
 
-console.log("🧪 Token Metrics Price Adapter Test (Single Token)\n");
+console.log("🧪 Token Metrics Trader Grades Adapter Test\n");
 
-// Load the ethers-encoded price adapter source code
-const sourceCode = fs.readFileSync("./functions/price.js", "utf8");
+// Load the trader grades adapter source code
+const sourceCode = fs.readFileSync("./functions/trader-grades.js", "utf8");
 
-// Helper function to decode price data
-function decodePriceData(hexString) {
+// Helper function to decode trader grade data
+function decodeTraderGradeData(hexString) {
   try {
+    // The response is a simple string containing the trader grade value
     const abi = new ethers.AbiCoder();
     const decoded = abi.decode(["uint256"], hexString);
     return decoded[0].toString();
   } catch (error) {
-    throw new Error(`Failed to decode price data: ${error.message}`);
+    throw new Error(`Failed to decode trader grade data: ${error.message}`);
   }
 }
 
-// Test single token
-async function testSingleTokenPrice() {
-  console.log("Testing single token price (USDT: 34008)...");
+// Test with token ID
+async function testTraderGrade() {
+  console.log("Testing fetch trader grade for token ID (36697)...");
 
   try {
     const result = await simulateScript({
       source: sourceCode,
-      args: ["34008"],
+      args: ["36697"],
       secrets: {
         API_KEY: process.env.TOKEN_METRICS_API_KEY || "test-key",
       },
@@ -51,12 +52,11 @@ async function testSingleTokenPrice() {
     console.log("Simulation completed");
 
     if (result.responseBytesHexstring && !result.errorString) {
-      const price = decodePriceData(result.responseBytesHexstring);
-      const priceInUSD = ethers.formatEther(price);
+      const traderGrade = decodeTraderGradeData(result.responseBytesHexstring);
+      const traderGradeNumber = ethers.formatUnits(traderGrade, 18);
 
-      console.log("✅ SUCCESS! Single token price:");
-      console.log(`   Token ID: 34008 (USDT)`);
-      console.log(`   Price: $${Number(priceInUSD).toFixed(6)}`);
+      console.log("✅ SUCCESS! Trader grade data:");
+      console.log(`   Grade: ${traderGradeNumber}`);
       console.log(
         `   Response size: ${result.responseBytesHexstring.length / 2 - 1} bytes`
       );
@@ -68,14 +68,14 @@ async function testSingleTokenPrice() {
   }
 }
 
-// Test invalid input (multiple tokens)
+// Test with invalid input (multiple tokens)
 async function testInvalidInput() {
   console.log("\nTesting invalid input (multiple tokens)...");
 
   try {
     const result = await simulateScript({
       source: sourceCode,
-      args: ["34008,33305"],
+      args: ["36697,33305"],
       secrets: {
         API_KEY: process.env.TOKEN_METRICS_API_KEY || "test-key",
       },
@@ -101,10 +101,10 @@ async function main() {
     console.log("⚠️  Set TOKEN_METRICS_API_KEY for real API testing");
   }
 
-  await testSingleTokenPrice();
+  await testTraderGrade();
   await testInvalidInput();
 
   console.log("\n🏁 Done!");
 }
 
-main();
+main(); 

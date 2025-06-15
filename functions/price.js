@@ -1,13 +1,13 @@
-// Helper: ABI encode uint256[]
-function abiEncodeUint256Array(values) {
-  const encodedValues = values.map((val) => val.toString(16).padStart(64, "0"));
-
-  // Encode array length as first 32 bytes
-  const lengthEncoded = values.length.toString(16).padStart(64, "0");
-
-  const fullEncoded = "0x" + lengthEncoded + encodedValues.join("");
-
-  return fullEncoded;
+// Helper function to convert 0x hex string to Uint8Array
+function hexStringToUint8Array(hexString) {
+  if (hexString.startsWith("0x")) {
+    hexString = hexString.slice(2);
+  }
+  const bytes = new Uint8Array(hexString.length / 2);
+  for (let i = 0; i < bytes.length; i++) {
+    bytes[i] = parseInt(hexString.substr(i * 2, 2), 16);
+  }
+  return bytes;
 }
 
 // Token Metrics Price API endpoint
@@ -23,16 +23,18 @@ if (!apiKey) {
   throw Error("API_KEY is required for Token Metrics API");
 }
 
-// Example: token_id = "34008,33305" (multiple tokens separated by comma)
+// Get single token_id from args
 const token_id = args[0];
 
 if (!token_id) {
   throw Error("token_id is required as first argument");
 }
 
-// Parse token IDs to maintain order
-const requestedTokenIds = token_id.split(',').map(id => id.trim());
-console.log(`Requested token IDs in order: ${requestedTokenIds.join(', ')}`);
+if (token_id.includes(",")) {
+  throw Error("token_id must be a single token ID, not a comma-separated list");
+}
+
+console.log(`Requested token ID: ${token_id}`);
 
 // Make HTTP request to Token Metrics Price API
 const response = await Functions.makeHttpRequest({
@@ -68,32 +70,22 @@ if (
 }
 
 const priceData = apiResponse.data;
-console.log(`Received ${priceData.length} price entries`);
+console.log(`Received price data for token`);
 
-// Create a map of token_id -> price for quick lookup
-const priceMap = {};
-priceData.forEach(item => {
-  const tokenId = item.TOKEN_ID?.toString();
-  if (tokenId && typeof item.CURRENT_PRICE === 'number') {
-    priceMap[tokenId] = item.CURRENT_PRICE;
-    console.log(`Token ${tokenId}: $${item.CURRENT_PRICE}`);
-  }
-});
-
-// Order prices according to the args order
-const orderedPrices = [];
-for (const tokenId of requestedTokenIds) {
-  const price = priceMap[tokenId];
-  if (price === undefined) {
-    throw Error(`Price not found for token_id: ${tokenId}`);
-  }
-  orderedPrices.push(ethers.parseUnits(price.toString(), 18));
+// Get the first (and should be only) item from the response
+const item = priceData[0];
+if (!item || typeof item.CURRENT_PRICE !== "number") {
+  throw Error(`Invalid price data received for token_id: ${token_id}`);
 }
 
-console.log(`Returning ${orderedPrices.length} prices in requested order`);
+console.log(
+  `Token ${item.TOKEN_ID}: $${item.CURRENT_PRICE} (${
+    item.TOKEN_NAME || item.NAME || ""
+  })`
+);
 
-// ABI encode array in the correct order
-const encodedArray = abiEncodeUint256Array(orderedPrices);
+// Convert price to wei (18 decimals)
+const price = ethers.parseUnits(item.CURRENT_PRICE.toString(), 18);
 
-// Return encoded array
-return ethers.getBytes(encodedArray);
+// Return encoded data as Uint8Array for Chainlink Functions
+return Functions.encodeUint256(price);

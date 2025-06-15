@@ -16,73 +16,94 @@ if (os.platform() === "win32") {
   }
 }
 
-console.log("🧪 Token Metrics Price Adapter Test (Single Token)\n");
+console.log("🧪 Token Metrics Hourly OHLCV Adapter Test\n");
 
-// Load the ethers-encoded price adapter source code
-const sourceCode = fs.readFileSync("./functions/price.js", "utf8");
+// Load the hourly OHLCV adapter source code
+const sourceCode = fs.readFileSync("./functions/hourly-ohlcv.js", "utf8");
 
-// Helper function to decode price data
-function decodePriceData(hexString) {
+// Helper function to decode OHLCV data
+function decodeOHLCVData(hexString) {
   try {
+    if (!hexString) {
+      throw new Error("No hex string provided");
+    }
     const abi = new ethers.AbiCoder();
     const decoded = abi.decode(["uint256"], hexString);
+    if (!decoded || !decoded[0]) {
+      throw new Error("Failed to decode uint256 value");
+    }
     return decoded[0].toString();
   } catch (error) {
-    throw new Error(`Failed to decode price data: ${error.message}`);
+    throw new Error(`Failed to decode OHLCV data: ${error.message}`);
   }
 }
 
-// Test single token
-async function testSingleTokenPrice() {
-  console.log("Testing single token price (USDT: 34008)...");
+// Test with token ID
+async function testOHLCV() {
+  console.log("Testing fetch hourly OHLCV for token ID (36697)...");
 
   try {
     const result = await simulateScript({
       source: sourceCode,
-      args: ["34008"],
+      args: ["36697"],
       secrets: {
         API_KEY: process.env.TOKEN_METRICS_API_KEY || "test-key",
       },
-      maxExecutionTimeMs: 15000,
+      maxExecutionTimeMs: 8000,
       numAllowedQueries: 1,
       returnType: "bytes",
     });
 
-    console.log("Simulation completed");
-
-    if (result.responseBytesHexstring && !result.errorString) {
-      const price = decodePriceData(result.responseBytesHexstring);
-      const priceInUSD = ethers.formatEther(price);
-
-      console.log("✅ SUCCESS! Single token price:");
-      console.log(`   Token ID: 34008 (USDT)`);
-      console.log(`   Price: $${Number(priceInUSD).toFixed(6)}`);
-      console.log(
-        `   Response size: ${result.responseBytesHexstring.length / 2 - 1} bytes`
-      );
-    } else {
-      console.log("❌ FAILED:", result.errorString);
+    if (!result) {
+      throw new Error("No result received from simulation");
     }
+
+    if (result.errorString) {
+      if (result.errorString.includes("timeout")) {
+        console.log("⚠️ WARNING: Request timed out. Please try again.");
+      } else {
+        console.log("❌ FAILED:", result.errorString);
+      }
+      return;
+    }
+
+    if (!result.responseBytesHexstring) {
+      console.log("❌ FAILED: No response bytes received");
+      return;
+    }
+
+    const openPrice = decodeOHLCVData(result.responseBytesHexstring);
+    const priceInUSD = ethers.formatEther(openPrice);
+
+    console.log("✅ SUCCESS! Hourly OHLCV data:");
+    console.log(`   Open Price: $${Number(priceInUSD).toFixed(6)}`);
+    console.log(
+      `   Response size: ${result.responseBytesHexstring.length / 2 - 1} bytes`
+    );
   } catch (error) {
     console.log("❌ ERROR:", error.message);
   }
 }
 
-// Test invalid input (multiple tokens)
+// Test with invalid input (multiple tokens)
 async function testInvalidInput() {
   console.log("\nTesting invalid input (multiple tokens)...");
 
   try {
     const result = await simulateScript({
       source: sourceCode,
-      args: ["34008,33305"],
+      args: ["36697,33305"],
       secrets: {
         API_KEY: process.env.TOKEN_METRICS_API_KEY || "test-key",
       },
-      maxExecutionTimeMs: 15000,
+      maxExecutionTimeMs: 8000,
       numAllowedQueries: 1,
       returnType: "bytes",
     });
+
+    if (!result) {
+      throw new Error("No result received from simulation");
+    }
 
     if (result.errorString) {
       console.log("✅ SUCCESS! Correctly rejected multiple tokens:");
@@ -101,10 +122,10 @@ async function main() {
     console.log("⚠️  Set TOKEN_METRICS_API_KEY for real API testing");
   }
 
-  await testSingleTokenPrice();
+  await testOHLCV();
   await testInvalidInput();
 
   console.log("\n🏁 Done!");
 }
 
-main();
+main(); 
