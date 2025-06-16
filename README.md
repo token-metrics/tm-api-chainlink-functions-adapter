@@ -28,12 +28,16 @@ This Chainlink Functions Adapter allows smart contracts to securely query Token 
   - Missing token ID
 
 ### 2. Tokens
-- **Input**: Token ID
-- **Output**: Token data as string
+- **Input**: Token ID or Token Symbol/Name
+- **Output**: 
+  - If input is Token ID → returns Token Symbol
+  - If input is Token Symbol/Name → returns Token ID
 - **Test Cases**:
   - Valid token ID
-  - Invalid token ID
-  - Missing token ID
+  - Valid token symbol
+  - Valid token name
+  - Invalid input
+  - Missing input
 
 ### 3. Trading Signals
 - **Input**: Token ID
