@@ -6,14 +6,19 @@
   "scripts": {
     "test": "node test/test-runner.js",
     "test:watch": "nodemon test/test-runner.js",
-    "install:deps": "npm install --no-optional"
+    "install:deps": "npm install --no-optional",
+    "upload:secrets": "node secretsManager/index.js",
+    "create:offchain-secrets": "node secretsManager/gen-offchain-secrets.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@chainlink/env-enc": "^1.0.5",
     "@chainlink/functions-toolkit": "^0.3.2",
-    "ethers": "^6.14.3"
+    "ethers": "^5.8.0",
+    "install": "^0.13.0",
+    "npm": "^11.4.2"
   },
   "devDependencies": {
     "dotenv": "^16.5.0",

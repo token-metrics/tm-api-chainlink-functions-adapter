@@ -1,4 +1,5 @@
 const { ethers } = await import("npm:ethers@6.10.0");
+const { JsonRpcProvider } = ethers;
 
 // Token Metrics Tokens API endpoint
 const TOKENS_API_URL = "https://api.tokenmetrics.com/v2/tokens";
