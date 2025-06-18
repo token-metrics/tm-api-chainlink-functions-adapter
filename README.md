@@ -293,6 +293,9 @@ npm run test
 Required environment variables:
 
 - `TOKEN_METRICS_API_KEY`: Your Token Metrics API key
+- `DON_ID`: Get this from chainlink document
+- `SEPOLIA_ROUTER_ADDRESS`: Get this from chainlink document
+- `SEPOLIA_RPC_URL`: Ethereum sepolia testnet rpc url
 - `PRIVATE_KEY`: Your wallet private key for contract deployment
 - `SUBSCRIPTION_ID`: Chainlink Functions subscription ID
 
