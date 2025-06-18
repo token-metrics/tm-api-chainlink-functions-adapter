@@ -283,6 +283,7 @@ To run tests:
 # Test specific adapter
 node test/<adapter-name>.test.js
 
+# or 
 npm run test <adapter-name>.test.js
 
 # Run default test (price.test.js)
