@@ -26,6 +26,7 @@ const response = await Functions.makeHttpRequest({
     "x-api-key": `${apiKey}`,
     "Content-Type": "application/json",
     accept: "application/json",
+    "x-integration": "chainlink",
   },
   data: {
     messages: [

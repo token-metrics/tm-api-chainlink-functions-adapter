@@ -44,12 +44,12 @@ contract SentimentsConsumer is FunctionsClient, ConfirmedOwner {
             'if (!apiKey) throw Error("API_KEY is required for Token Metrics API");',
             "const response = await Functions.makeHttpRequest({",
             " url: SENTIMENT_API_URL,",
-            ' headers: { "x-api-key": `${apiKey}`, accept: "application/json" },',
+            ' headers: { "x-api-key": `${apiKey}`, accept: "application/json", "x-integration": "chainlink" },',
             " timeout: REQUEST_TIMEOUT",
             "});",
             "if (response.error) {",
             ' if (response.error.message.includes("timeout")) throw Error("Request timed out");',
-            ' throw Error(`API failed: ${response.error.message}`);',
+            " throw Error(`API failed: ${response.error.message}`);",
             "}",
             "const apiResponse = response.data;",
             'if (!apiResponse || !apiResponse.success) throw Error(`Sentiment API error: ${apiResponse?.message || "Unknown error"}`);',
@@ -109,4 +109,4 @@ contract SentimentsConsumer is FunctionsClient, ConfirmedOwner {
     function getSentimentGrade() external view returns (uint256) {
         return sentimentGrade;
     }
-} 
+}

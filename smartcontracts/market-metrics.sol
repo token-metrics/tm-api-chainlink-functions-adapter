@@ -44,13 +44,13 @@ contract MarketMetricsConsumer is FunctionsClient, ConfirmedOwner {
             'if (!apiKey) throw Error("API_KEY is required for Token Metrics API");',
             "const response = await Functions.makeHttpRequest({",
             " url: MARKET_METRICS_API_URL,",
-            ' headers: { "x-api-key": `${apiKey}`, accept: "application/json" },',
+            ' headers: { "x-api-key": `${apiKey}`, accept: "application/json", "x-integration": "chainlink" },',
             " params: { limit: 1, page: 1 },",
             " timeout: REQUEST_TIMEOUT",
             "});",
             "if (response.error) {",
             ' if (response.error.message.includes("timeout")) throw Error("Request timed out");',
-            ' throw Error(`API failed: ${response.error.message}`);',
+            " throw Error(`API failed: ${response.error.message}`);",
             "}",
             "const apiResponse = response.data;",
             'if (!apiResponse || !apiResponse.success) throw Error(`Market Metrics API error: ${apiResponse?.message || "Unknown error"}`);',
@@ -110,4 +110,4 @@ contract MarketMetricsConsumer is FunctionsClient, ConfirmedOwner {
     function getTotalCryptoMarketCap() external view returns (uint256) {
         return totalCryptoMarketCap;
     }
-} 
+}

@@ -47,13 +47,13 @@ contract InvestorGradesConsumer is FunctionsClient, ConfirmedOwner {
             'if (token_id.includes(",")) throw Error("token_id must be a single token ID, not a comma-separated list");',
             "const response = await Functions.makeHttpRequest({",
             " url: INVESTOR_GRADES_API_URL,",
-            ' headers: { "x-api-key": `${apiKey}`, accept: "application/json" },',
+            ' headers: { "x-api-key": `${apiKey}`, accept: "application/json", "x-integration": "chainlink" },',
             " params: { token_id, limit: 1, page: 1 },",
             " timeout: REQUEST_TIMEOUT",
             "});",
             "if (response.error) {",
             ' if (response.error.message.includes("timeout")) throw Error("Request timed out");',
-            ' throw Error(`API failed: ${response.error.message}`);',
+            " throw Error(`API failed: ${response.error.message}`);",
             "}",
             "const apiResponse = response.data;",
             'if (!apiResponse || !apiResponse.success) throw Error(`Investor Grades API error: ${apiResponse?.message || "Unknown error"}`);',
@@ -117,4 +117,4 @@ contract InvestorGradesConsumer is FunctionsClient, ConfirmedOwner {
     function getInvestorGrade() external view returns (uint256) {
         return investorGrade;
     }
-} 
+}

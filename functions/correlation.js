@@ -22,6 +22,7 @@ const response = await Functions.makeHttpRequest({
   headers: {
     "x-api-key": `${apiKey}`,
     accept: "application/json",
+    "x-integration": "chainlink",
   },
   params: {
     token_id: tokenId,
@@ -42,9 +43,7 @@ const apiResponse = response.data;
 
 if (!apiResponse || !apiResponse.success) {
   throw Error(
-    `Correlation API request failed: ${
-      apiResponse?.message || "Unknown error"
-    }`
+    `Correlation API request failed: ${apiResponse?.message || "Unknown error"}`
   );
 }
 
@@ -75,4 +74,4 @@ if (!topCorrelatedToken) {
 }
 
 // Return the encoded token
-return Functions.encodeString(topCorrelatedToken); 
+return Functions.encodeString(topCorrelatedToken);

@@ -43,7 +43,7 @@ contract CryptoInvestorsConsumer is FunctionsClient, ConfirmedOwner {
             'if (!apiKey) throw Error("API_KEY is required for Token Metrics API");',
             "const response = await Functions.makeHttpRequest({",
             " url: CRYPTO_INVESTORS_API_URL,",
-            ' headers: { "x-api-key": `${apiKey}`, accept: "application/json" },',
+            ' headers: { "x-api-key": `${apiKey}`, accept: "application/json", "x-integration": "chainlink" },',
             " params: { limit: 1, page: 1 },",
             " timeout: REQUEST_TIMEOUT",
             "});",

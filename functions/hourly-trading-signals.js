@@ -1,5 +1,6 @@
 // Token Metrics Hourly Trading Signals API endpoint
-const HOURLY_TRADING_SIGNALS_API_URL = "https://api.tokenmetrics.com/v2/hourly-trading-signals";
+const HOURLY_TRADING_SIGNALS_API_URL =
+  "https://api.tokenmetrics.com/v2/hourly-trading-signals";
 const REQUEST_TIMEOUT = 10000; // 10 seconds timeout
 
 const { ethers } = await import("npm:ethers@6.10.0");
@@ -24,6 +25,7 @@ const response = await Functions.makeHttpRequest({
   headers: {
     "x-api-key": `${apiKey}`,
     accept: "application/json",
+    "x-integration": "chainlink",
   },
   params: {
     token_id: tokenId,
@@ -65,4 +67,4 @@ if (!item || typeof item.SIGNAL !== "string") {
 }
 
 // Return the encoded signal
-return Functions.encodeString(item.SIGNAL); 
+return Functions.encodeString(item.SIGNAL);

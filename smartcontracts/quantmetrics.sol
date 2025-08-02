@@ -46,13 +46,13 @@ contract QuantmetricsConsumer is FunctionsClient, ConfirmedOwner {
             'if (!tokenId) throw Error("token_id is required");',
             "const response = await Functions.makeHttpRequest({",
             " url: QUANTMETRICS_API_URL,",
-            ' headers: { "x-api-key": `${apiKey}`, accept: "application/json" },',
+            ' headers: { "x-api-key": `${apiKey}`, accept: "application/json", "x-integration": "chainlink" },',
             " params: { token_id: tokenId },",
             " timeout: REQUEST_TIMEOUT",
             "});",
             "if (response.error) {",
             ' if (response.error.message.includes("timeout")) throw Error("Request timed out");',
-            ' throw Error(`API failed: ${response.error.message}`);',
+            " throw Error(`API failed: ${response.error.message}`);",
             "}",
             "const apiResponse = response.data;",
             'if (!apiResponse || !apiResponse.success) throw Error(`Quantmetrics API error: ${apiResponse?.message || "Unknown error"}`);',
@@ -116,4 +116,4 @@ contract QuantmetricsConsumer is FunctionsClient, ConfirmedOwner {
     function getVolatility() external view returns (uint256) {
         return volatility;
     }
-} 
+}

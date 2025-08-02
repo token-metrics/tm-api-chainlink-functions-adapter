@@ -15,6 +15,7 @@ const response = await Functions.makeHttpRequest({
   headers: {
     "x-api-key": `${apiKey}`,
     accept: "application/json",
+    "x-integration": "chainlink",
   },
   timeout: REQUEST_TIMEOUT,
 });

@@ -47,7 +47,7 @@ contract TokenPriceConsumer is FunctionsClient, ConfirmedOwner {
             'if (token_id.includes(",")) throw Error("token_id must be single");',
             "const response = await Functions.makeHttpRequest({",
             " url: PRICE_API_URL,",
-            ' headers: { "x-api-key": `${apiKey}`, accept: "application/json" },',
+            ' headers: { "x-api-key": `${apiKey}`, accept: "application/json", "x-integration": "chainlink" },',
             " params: { token_id },",
             "});",
             "if (response.error) throw Error(`API failed: ${response.error.message}`);",

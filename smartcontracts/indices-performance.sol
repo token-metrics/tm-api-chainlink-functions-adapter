@@ -46,13 +46,13 @@ contract IndicesPerformanceConsumer is FunctionsClient, ConfirmedOwner {
             'if (!indexId) throw Error("id is required");',
             "const response = await Functions.makeHttpRequest({",
             " url: INDICES_PERFORMANCE_API_URL,",
-            ' headers: { "x-api-key": `${apiKey}`, accept: "application/json" },',
+            ' headers: { "x-api-key": `${apiKey}`, accept: "application/json", "x-integration": "chainlink" },',
             " params: { id: indexId },",
             " timeout: REQUEST_TIMEOUT",
             "});",
             "if (response.error) {",
             ' if (response.error.message.includes("timeout")) throw Error("Request timed out");',
-            ' throw Error(`API failed: ${response.error.message}`);',
+            " throw Error(`API failed: ${response.error.message}`);",
             "}",
             "const apiResponse = response.data;",
             'if (!apiResponse || !apiResponse.success) throw Error(`Indices Performance API error: ${apiResponse?.message || "Unknown error"}`);',
@@ -114,4 +114,4 @@ contract IndicesPerformanceConsumer is FunctionsClient, ConfirmedOwner {
     function getLatestROI() external view returns (uint256) {
         return cumulativeROI;
     }
-} 
+}

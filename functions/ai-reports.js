@@ -26,6 +26,7 @@ const response = await Functions.makeHttpRequest({
   headers: {
     "x-api-key": `${apiKey}`,
     accept: "application/json",
+    "x-integration": "chainlink",
   },
   params: {
     token_id,
@@ -39,18 +40,14 @@ if (response.error) {
   if (response.error.message.includes("timeout")) {
     throw Error("Request timed out. Please try again.");
   }
-  throw Error(
-    `Token Metrics AI Reports API failed: ${response.error.message}`
-  );
+  throw Error(`Token Metrics AI Reports API failed: ${response.error.message}`);
 }
 
 const apiResponse = response.data;
 
 if (!apiResponse || !apiResponse.success) {
   throw Error(
-    `AI Reports API request failed: ${
-      apiResponse?.message || "Unknown error"
-    }`
+    `AI Reports API request failed: ${apiResponse?.message || "Unknown error"}`
   );
 }
 
@@ -65,9 +62,7 @@ if (
 // Get the first (and should be only) item from the response
 const item = apiResponse.data[0];
 if (!item || typeof item.INVESTMENT_ANALYSIS !== "string") {
-  throw Error(
-    `Invalid AI reports data received for token_id: ${token_id}`
-  );
+  throw Error(`Invalid AI reports data received for token_id: ${token_id}`);
 }
 
 const encodedAnalysis = Functions.encodeString(item.INVESTMENT_ANALYSIS);

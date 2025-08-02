@@ -30,6 +30,7 @@ const response = await Functions.makeHttpRequest({
   headers: {
     "x-api-key": `${apiKey}`,
     accept: "application/json",
+    "x-integration": "chainlink",
   },
   params: {
     token_id,
@@ -72,9 +73,7 @@ console.log(`Received hourly OHLCV data for token`);
 // Get the first (and should be only) item from the response
 const item = ohlcvData[0];
 if (!item || typeof item.OPEN !== "number") {
-  throw Error(
-    `Invalid hourly OHLCV data received for token_id: ${token_id}`
-  );
+  throw Error(`Invalid hourly OHLCV data received for token_id: ${token_id}`);
 }
 
 console.log(`Token ${item.TOKEN_ID}: Open Price ${item.OPEN}`);
@@ -83,4 +82,4 @@ console.log(`Token ${item.TOKEN_ID}: Open Price ${item.OPEN}`);
 const openPrice = ethers.parseUnits(item.OPEN.toString(), 18);
 
 // Return the encoded OPEN price
-return Functions.encodeUint256(openPrice); 
+return Functions.encodeUint256(openPrice);

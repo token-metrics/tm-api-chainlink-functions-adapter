@@ -28,6 +28,7 @@ const response = await Functions.makeHttpRequest({
   headers: {
     "x-api-key": `${apiKey}`,
     accept: "application/json",
+    "x-integration": "chainlink",
   },
   params: {
     token_id,
@@ -50,9 +51,7 @@ const apiResponse = response.data;
 
 if (!apiResponse || !apiResponse.success) {
   throw Error(
-    `Daily OHLCV API request failed: ${
-      apiResponse?.message || "Unknown error"
-    }`
+    `Daily OHLCV API request failed: ${apiResponse?.message || "Unknown error"}`
   );
 }
 
@@ -67,13 +66,11 @@ if (
 // Get the first (and should be only) item from the response
 const item = apiResponse.data[0];
 if (!item || typeof item.OPEN !== "number") {
-  throw Error(
-    `Invalid daily OHLCV data received for token_id: ${token_id}`
-  );
+  throw Error(`Invalid daily OHLCV data received for token_id: ${token_id}`);
 }
 
 // Convert OPEN price to wei (18 decimals)
 const openPrice = ethers.parseUnits(item.OPEN.toString(), 18);
 
 // Return the encoded OPEN price
-return Functions.encodeUint256(openPrice); 
+return Functions.encodeUint256(openPrice);
